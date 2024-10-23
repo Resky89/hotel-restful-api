@@ -48,4 +48,3 @@ const Payment = {
 };
 
 module.exports = Payment;
-
