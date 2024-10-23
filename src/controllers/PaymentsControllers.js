@@ -67,4 +67,3 @@ module.exports = {
     updatePayment,
     deletePayment,
 };
-
