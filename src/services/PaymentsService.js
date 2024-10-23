@@ -45,4 +45,3 @@ const PaymentService = {
 };
 
 module.exports = PaymentService;
-
