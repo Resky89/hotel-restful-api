@@ -22,7 +22,11 @@ async function getAmenityById(id) {
 
 // Fungsi untuk memperbarui amenitas
 async function updateAmenity(id, amenity) {
-    await connection.execute('UPDATE amenities SET name = ?, description = ?, price = ? WHERE id = ?', [amenity.name, amenity.description,amenity.price, id]);
+    const [result] = await connection.execute('UPDATE amenities SET name = ?, description = ?, price = ? WHERE id = ?', [amenity.name, amenity.description,amenity.price, id]);
+    if (result.affectedRows > 0) {
+        return await getAmenityById(id);
+      }
+      return null;
 }
 
 // Fungsi untuk menghapus amenitas
@@ -37,4 +41,3 @@ module.exports = {
     updateAmenity,
     deleteAmenity
 };
-
