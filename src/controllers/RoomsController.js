@@ -1,7 +1,6 @@
-const Room = require('../models/roomsModel');
-const roomsServices = require('../services/roomsServices');
-const { validateRoom } = require('../validation/roomValidation');
-const { sendSuccessResponse, sendErrorResponse } = require('../helpers/responseHelper');
+const roomsServices = require('../services/roomsService');
+const { validateRoom } = require('../validations/roomsValidation');
+const { sendSuccessResponse, sendErrorResponse } = require('../helpers/response');
 
 const getAllRooms = async (req, res) => {
   try {
