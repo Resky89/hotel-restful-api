@@ -20,7 +20,7 @@ async function fetchAmenityById(id) {
 
 // Fungsi untuk memperbarui amenitas
 async function modifyAmenity(id, amenity) {
-    await amenitiesModel.updateAmenity(id, amenity);
+   return await amenitiesModel.updateAmenity(id, amenity);
 }
 
 // Fungsi untuk menghapus amenitas
@@ -35,5 +35,4 @@ module.exports = {
     modifyAmenity,
     removeAmenity
 };
-
 
