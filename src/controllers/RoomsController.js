@@ -1,14 +1,15 @@
 const Room = require('../models/roomsModel');
 const roomsServices = require('../services/roomsServices');
 const { validateRoom } = require('../validation/roomValidation');
+const { sendSuccessResponse, sendErrorResponse } = require('../helpers/responseHelper');
 
 const getAllRooms = async (req, res) => {
   try {
     const rooms = await roomsServices.getAllRooms();
-    res.json(rooms);
+    sendSuccessResponse(res, 200, 'Data ruangan berhasil diambil', rooms);
   } catch (error) {
     console.error('Error dalam getAllRooms:', error);
-    res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data ruangan', error: error.message });
+    sendErrorResponse(res, 500, 'Terjadi kesalahan saat mengambil data ruangan', error.message);
   }
 };
 
@@ -16,11 +17,11 @@ const getRoomById = async (req, res) => {
   try {
     const room = await roomsServices.getRoomById(req.params.id);
     if (!room) {
-      return res.status(404).json({ message: 'Ruangan tidak ditemukan' });
+      return sendErrorResponse(res, 404, 'Ruangan tidak ditemukan');
     }
-    res.json(room);
+    sendSuccessResponse(res, 200, 'Data ruangan berhasil diambil', room);
   } catch (error) {
-    res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data ruangan', error: error.message });
+    sendErrorResponse(res, 500, 'Terjadi kesalahan saat mengambil data ruangan', error.message);
   }
 };
 
@@ -28,13 +29,13 @@ const createRoom = async (req, res) => {
   try {
     const { error } = validateRoom(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return sendErrorResponse(res, 400, error.details[0].message);
     }
 
     const savedRoom = await roomsServices.createRoom(req.body);
-    res.status(201).json(savedRoom);
+    sendSuccessResponse(res, 201, 'Ruangan baru berhasil dibuat', savedRoom);
   } catch (error) {
-    res.status(400).json({ message: 'Gagal membuat ruangan baru', error: error.message });
+    sendErrorResponse(res, 400, 'Gagal membuat ruangan baru', error.message);
   }
 };
 
@@ -42,16 +43,16 @@ const updateRoom = async (req, res) => {
   try {
     const { error } = validateRoom(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return sendErrorResponse(res, 400, error.details[0].message);
     }
 
     const updatedRoom = await roomsServices.updateRoom(req.params.id, req.body);
     if (!updatedRoom) {
-      return res.status(404).json({ message: 'Ruangan tidak ditemukan' });
+      return sendErrorResponse(res, 404, 'Ruangan tidak ditemukan');
     }
-    res.json(updatedRoom);
+    sendSuccessResponse(res, 200, 'Ruangan berhasil diperbarui', updatedRoom);
   } catch (error) {
-    res.status(400).json({ message: 'Gagal memperbarui ruangan', error: error.message });
+    sendErrorResponse(res, 400, 'Gagal memperbarui ruangan', error.message);
   }
 };
 
@@ -59,11 +60,11 @@ const deleteRoom = async (req, res) => {
   try {
     const result = await roomsServices.deleteRoom(req.params.id);
     if (!result) {
-      return res.status(404).json({ message: 'Ruangan tidak ditemukan' });
+      return sendErrorResponse(res, 404, 'Ruangan tidak ditemukan');
     }
-    res.json({ message: 'Ruangan berhasil dihapus' });
+    sendSuccessResponse(res, 200, 'Ruangan berhasil dihapus');
   } catch (error) {
-    res.status(500).json({ message: 'Gagal menghapus ruangan', error: error.message });
+    sendErrorResponse(res, 500, 'Gagal menghapus ruangan', error.message);
   }
 };
 
@@ -74,4 +75,3 @@ module.exports = {
   updateRoom,
   deleteRoom
 };
-
