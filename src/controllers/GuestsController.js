@@ -1,15 +1,16 @@
-const guestValidation = require('../validations/GuestsValidation');
+const { guestSchema } = require('../validations/GuestsValidation');
 const guestService = require('../services/GuestsService');
+const { sendSuccessResponse, sendErrorResponse } = require('../helpers/response');
 
 const guestController = {
   // Get all guests
   async getAllGuests(req, res) {
     try {
       const guests = await guestService.getAllGuests();
-      res.status(200).json(guests);
+      sendSuccessResponse(res, 200, 'Guests retrieved successfully', guests);
     } catch (error) {
       console.error('Error in getAllGuests:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      sendErrorResponse(res, 500, 'Internal server error', error);
     }
   },
 
@@ -18,53 +19,53 @@ const guestController = {
     try {
       const guest = await guestService.getGuestById(req.params.id);
       if (!guest) {
-        return res.status(404).json({ message: 'Guest not found' });
+        return sendErrorResponse(res, 404, 'Guest not found');
       }
-      res.status(200).json(guest);
+      sendSuccessResponse(res, 200, 'Guest retrieved successfully', guest);
     } catch (error) {
       console.error('Error in getGuestById:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      sendErrorResponse(res, 500, 'Internal server error', error);
     }
   },
 
   // Create a new guest
   async createGuest(req, res) {
     try {
-      const { error, value } = guestValidation.createGuest.validate(req.body);
+      const { error, value } = guestSchema.validate(req.body);
       if (error) {
-        return res.status(400).json({ message: error.details[0].message });
+        return sendErrorResponse(res, 400, error.details[0].message);
       }
 
       const newGuest = await guestService.createGuest(value);
-      res.status(201).json(newGuest);
+      sendSuccessResponse(res, 201, 'Guest created successfully', newGuest);
     } catch (error) {
       console.error('Error in createGuest:', error);
       if (error.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ message: 'Duplicate entry. This guest already exists.' });
+        return sendErrorResponse(res, 400, 'Duplicate entry. This guest already exists.');
       }
-      res.status(500).json({ message: 'Internal server error' });
+      sendErrorResponse(res, 500, 'Internal server error', error);
     }
   },
 
   // Update an existing guest
   async updateGuest(req, res) {
     try {
-      const { error, value } = guestValidation.updateGuest.validate(req.body);
+      const { error, value } = guestSchema.validate(req.body, { stripUnknown: true });
       if (error) {
-        return res.status(400).json({ message: error.details[0].message });
+        return sendErrorResponse(res, 400, error.details[0].message);
       }
 
       const updatedGuest = await guestService.updateGuest(req.params.id, value);
       if (!updatedGuest) {
-        return res.status(404).json({ message: 'Guest not found' });
+        return sendErrorResponse(res, 404, 'Guest not found');
       }
-      res.status(200).json({ message: 'Guest updated successfully', guest: updatedGuest });
+      sendSuccessResponse(res, 200, 'Guest updated successfully', updatedGuest);
     } catch (error) {
       console.error('Error in updateGuest:', error);
       if (error.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ message: 'Duplicate entry. This data already exists for another guest.' });
+        return sendErrorResponse(res, 400, 'Duplicate entry. This data already exists for another guest.');
       }
-      res.status(500).json({ message: 'Internal server error' });
+      sendErrorResponse(res, 500, 'Internal server error', error);
     }
   },
 
@@ -73,15 +74,14 @@ const guestController = {
     try {
       const result = await guestService.deleteGuest(req.params.id);
       if (!result) {
-        return res.status(404).json({ message: 'Guest not found' });
+        return sendErrorResponse(res, 404, 'Guest not found');
       }
-      res.status(200).json({ message: 'Guest deleted successfully' });
+      sendSuccessResponse(res, 200, 'Guest deleted successfully');
     } catch (error) {
       console.error('Error in deleteGuest:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      sendErrorResponse(res, 500, 'Internal server error', error);
     }
   },
 };
 
 module.exports = guestController;
-
