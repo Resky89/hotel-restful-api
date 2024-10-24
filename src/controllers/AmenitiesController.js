@@ -1,13 +1,15 @@
 const amenitiesService = require("../services/AmenitiesService"); // Pastikan jalur ini sesuai
-const { validateAmenity } = require("../validations/AmenitiesValidation"); // Tambahkan import validasi
-
+const {
+  sendSuccessResponse,
+  sendErrorResponse,
+} = require("../helpers/response");
 // Fungsi untuk mendapatkan semua amenitas
 async function getAllAmenities(req, res) {
   try {
     const amenities = await amenitiesService.fetchAllAmenities();
-    res.status(200).json(amenities);
+    sendSuccessResponse(res, 200, "Amenities fetched successfully", amenities);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching amenities", error });
+    sendErrorResponse(res, 500, "Failed to fetch amenities", error.message);
   }
 }
 
@@ -17,30 +19,23 @@ async function getAmenityById(req, res) {
   try {
     const amenity = await amenitiesService.fetchAmenityById(id);
     if (amenity) {
-      res.status(200).json(amenity);
+      sendSuccessResponse(res, 200, "Amenity fetched successfully", amenity);
     } else {
-      res.status(404).json({ message: "Amenity not found" });
+      sendErrorResponse(res, 404, "Amenity not found");
     }
   } catch (error) {
-    res.status(500).json({ message: "Error fetching amenity", error });
+    sendErrorResponse(res, 500, "Failed to fetch amenity", error.message);
   }
 }
 
 // Fungsi untuk menambahkan amenitas
 async function addAmenity(req, res) {
   const amenity = req.body;
-  
-  // Validasi amenitas
-  const { error } = validateAmenity(amenity);
-  if (error) {
-    return res.status(400).json({ message: "Validation error", details: error.details });
-  }
-
   try {
     const newAmenityId = await amenitiesService.createAmenity(amenity);
-    res.status(201).json(newAmenityId);
+    sendSuccessResponse(res, 201, "Amenity created successfully", newAmenityId);
   } catch (error) {
-    res.status(500).json({ message: "Error adding amenity", error });
+    sendErrorResponse(res, 500, "Failed to create amenity", error.message);
   }
 }
 
@@ -48,29 +43,23 @@ async function addAmenity(req, res) {
 async function updateAmenity(req, res) {
   const { id } = req.params;
   const amenity = req.body;
-
-  // Validasi amenitas
-  const { error } = validateAmenity(amenity);
-  if (error) {
-    return res.status(400).json({ message: "Validation error", details: error.details });
-  }
-
   try {
-    await amenitiesService.modifyAmenity(id, amenity);
-    res.status(200).json({ message: "Amenity updated successfully" });
+   const amenities = await amenitiesService.modifyAmenity(id, amenity);
+    sendSuccessResponse(res, 200, "Amenity update successfully", amenities);
   } catch (error) {
-    res.status(500).json({ message: "Error updating amenity", error });
+    sendErrorResponse(res, 500, "Error updating amenity", error.message);
   }
-}
+  }
+
 
 // Fungsi untuk menghapus amenitas
 async function deleteAmenity(req, res) {
   const { id } = req.params;
   try {
     await amenitiesService.removeAmenity(id);
-    res.status(200).json({ message: "Amenity deleted successfully" });
+    sendSuccessResponse(res, 200, "Amenity delete successfully");
   } catch (error) {
-    res.status(500).json({ message: "Error deleting amenity", error });
+    sendErrorResponse(res, 500, "Error deleted amenity", error.message);
   }
 }
 
@@ -81,4 +70,3 @@ module.exports = {
   updateAmenity,
   deleteAmenity,
 };
-
