@@ -1,27 +1,30 @@
 // src/controllers/PaymentControllers.js
 const PaymentService = require('../services/PaymentsService');
+const { validatePayment } = require('../validations/PaymentsValidation');
+const { sendSuccessResponse, sendErrorResponse } = require('../helpers/response');
 
 // Kontroler untuk membuat pembayaran
 const createPayment = async(req, res) => {
     try {
-        const paymentData = req.body; // Pastikan transaction_id ada di sini
+        const paymentData = req.body;
+        const { error } = validatePayment(paymentData);
+        if (error) {
+            return sendErrorResponse(res, 400, "Validation failed", error.details[0].message);
+        }
         const result = await PaymentService.createPayment(paymentData);
-        res.status(201).json({ message: 'Data successfully added', data: result }); // Mengembalikan data yang baru ditambahkan
+        sendSuccessResponse(res, 201, "Payment created successfully", result);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to create payment', error });
+        sendErrorResponse(res, 500, "Failed to create payment", error.message);
     }
 };
 
 // Kontroler untuk mendapatkan semua pembayaran
 const getAllPayments = async(req, res) => {
     try {
-        console.log("Memanggil getAllPayments"); // Menambahkan logging
         const payments = await PaymentService.getAllPayments();
-        console.log("Pembayaran yang diterima:", payments); // Menambahkan logging
-        res.status(200).json(payments);
+        sendSuccessResponse(res, 200, "Payments retrieved successfully", payments);
     } catch (error) {
-        console.error("Kesalahan saat mendapatkan pembayaran:", error.message); // Menambahkan logging untuk pesan kesalahan
-        res.status(500).json({ message: 'Failed to retrieve payments', error: error.message });
+        sendErrorResponse(res, 500, "Failed to retrieve payments", error.message);
     }
 };
 
@@ -29,23 +32,30 @@ const getAllPayments = async(req, res) => {
 const getPaymentById = async(req, res) => {
     try {
         const payment = await PaymentService.getPaymentById(req.params.id);
-        if (payment.length === 0) {
-            return res.status(404).json({ message: 'Payment not found' });
+        if (!payment) {
+            return sendErrorResponse(res, 404, "Payment not found");
         }
-        res.status(200).json(payment);
+        sendSuccessResponse(res, 200, "Payment retrieved successfully", payment);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to retrieve payment', error });
+        sendErrorResponse(res, 500, "Failed to retrieve payment", error.message);
     }
 };
 
 // Kontroler untuk memperbarui pembayaran
 const updatePayment = async(req, res) => {
     try {
-        const paymentData = req.body; // Pastikan transaction_id ada di sini
-        const result = await PaymentService.updatePayment(req.params.id, paymentData);
-        res.status(200).json({ message: result.message, data: {...paymentData, id: req.params.id }, affectedRows: result.affectedRows }); // Mengembalikan data yang diperbarui
+        const paymentData = req.body;
+        const { error } = validatePayment(paymentData);
+        if (error) {
+            return sendErrorResponse(res, 400, "Validation failed", error.details[0].message);
+        }
+        const updatedPayment = await PaymentService.updatePayment(req.params.id, paymentData);
+        if (!updatedPayment) {
+            return sendErrorResponse(res, 404, "Payment not found");
+        }
+        sendSuccessResponse(res, 200, "Payment updated successfully", updatedPayment);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to update payment', error });
+        sendErrorResponse(res, 500, "Failed to update payment", error.message);
     }
 };
 
@@ -53,9 +63,12 @@ const updatePayment = async(req, res) => {
 const deletePayment = async(req, res) => {
     try {
         const result = await PaymentService.deletePayment(req.params.id);
-        res.status(200).json({ message: result.message }); // Pastikan ini mengembalikan pesan
+        if (!result) {
+            return sendErrorResponse(res, 404, "Payment not found");
+        }
+        sendSuccessResponse(res, 200, "Payment deleted successfully");
     } catch (error) {
-        res.status(500).json({ message: 'Failed to delete payment', error });
+        sendErrorResponse(res, 500, "Failed to delete payment", error.message);
     }
 };
 
