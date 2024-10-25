@@ -1,4 +1,5 @@
 const amenitiesService = require("../services/AmenitiesService"); // Pastikan jalur ini sesuai
+const { validateAmenity } = require("../validations/AmenitiesValidation");
 const {
   sendSuccessResponse,
   sendErrorResponse,
@@ -32,8 +33,12 @@ async function getAmenityById(req, res) {
 async function addAmenity(req, res) {
   const amenity = req.body;
   try {
-    const newAmenityId = await amenitiesService.createAmenity(amenity);
-    sendSuccessResponse(res, 201, "Amenity created successfully", newAmenityId);
+    const { error } = validateAmenity(amenity);
+    if (error) {
+      return sendErrorResponse(res, 400, "Validation failed", error.details[0].message);
+    }
+    const newAmenity = await amenitiesService.createAmenity(amenity);
+    sendSuccessResponse(res, 201, "Amenity created successfully", newAmenity);
   } catch (error) {
     sendErrorResponse(res, 500, "Failed to create amenity", error.message);
   }
@@ -44,13 +49,16 @@ async function updateAmenity(req, res) {
   const { id } = req.params;
   const amenity = req.body;
   try {
-   const amenities = await amenitiesService.modifyAmenity(id, amenity);
-    sendSuccessResponse(res, 200, "Amenity update successfully", amenities);
+    const { error } = validateAmenity(amenity);
+    if (error) {
+      return sendErrorResponse(res, 400, "Validation failed", error.details[0].message);
+    }
+    const updatedAmenity = await amenitiesService.modifyAmenity(id, amenity);
+    sendSuccessResponse(res, 200, "Amenity updated successfully", updatedAmenity);
   } catch (error) {
-    sendErrorResponse(res, 500, "Error updating amenity", error.message);
+    sendErrorResponse(res, 500, "Failed to update amenity", error.message);
   }
-  }
-
+}
 
 // Fungsi untuk menghapus amenitas
 async function deleteAmenity(req, res) {
