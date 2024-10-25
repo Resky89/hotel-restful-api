@@ -24,7 +24,7 @@ const Payment = {
   getById: async (id) => {
     const query = "SELECT * FROM payment WHERE id = ?";
     const [result] = await db.query(query, [id]);
-    return result;
+    return result[0];
   },
   update: async (id, paymentData) => {
     const query =
