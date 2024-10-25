@@ -7,4 +7,5 @@ router.get('/guests/:id', guestController.getGuestById);
 router.post('/guests', guestController.createGuest);
 router.put('/guests/:id', guestController.updateGuest);
 router.delete('/guests/:id', guestController.deleteGuest);
+
 module.exports = router;
