@@ -4,7 +4,6 @@ const {
   sendErrorResponse,
 } = require("../helpers/response");
 
-
 const getAllBookings = async (req, res) => {
   try {
     const bookings = await bookingService.getAllBookings();
