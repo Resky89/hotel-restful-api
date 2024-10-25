@@ -5,41 +5,40 @@ const PaymentService = {
     createPayment: async (paymentData) => {
         try {
             const result = await Payment.create(paymentData);
-            return { message: 'Payment successfully created', data: paymentData, insertId: result.insertId };
+            const createdPayment = await Payment.getById(result.insertId);
+            return createdPayment;
         } catch (err) {
-            throw err; // Mengoper kesalahan ke kontroler
+            throw err;
         }
     },
     getAllPayments: async () => {
         try {
-            const results = await Payment.getAll();
-            return results;
+            return await Payment.getAll();
         } catch (err) {
-            throw err; // Mengoper kesalahan ke kontroler
+            throw err;
         }
     },
     getPaymentById: async (id) => {
         try {
-            const result = await Payment.getById(id);
-            return result;
+            return await Payment.getById(id);
         } catch (err) {
-            throw err; // Mengoper kesalahan ke kontroler
+            throw err;
         }
     },
     updatePayment: async (id, paymentData) => {
         try {
-            const result = await Payment.update(id, paymentData);
-            return { message: 'Payment successfully updated', affectedRows: result.affectedRows };
+            await Payment.update(id, paymentData);
+            return await Payment.getById(id);
         } catch (err) {
-            throw err; // Mengoper kesalahan ke kontroler
+            throw err;
         }
     },
     deletePayment: async (id) => {
         try {
             const result = await Payment.delete(id);
-            return { message: 'Payment successfully deleted', affectedRows: result.affectedRows };
+            return result.affectedRows > 0;
         } catch (err) {
-            throw err; // Mengoper kesalahan ke kontroler
+            throw err;
         }
     },
 };
