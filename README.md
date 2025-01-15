@@ -12,7 +12,6 @@ Welcome to the Hotel Restful API repository! This project aims to provide a REST
 - [Instalasi / Installation](#instalasi--installation)
 - [Penggunaan / Usage](#penggunaan--usage)
 - [API Endpoints](#api-endpoints)
-- [Kontribusi / Contributing](#kontribusi--contributing)
 
 ## 📖 Pengenalan / Introduction
 
@@ -108,15 +107,3 @@ Here are some of the main endpoints available in this API:
   - GET `/customers/:id`: Mendapatkan pelanggan berdasarkan ID / Get customer by ID
   - PUT `/customers/:id`: Memperbarui pelanggan berdasarkan ID / Update customer by ID
   - DELETE `/customers/:id`: Menghapus pelanggan berdasarkan ID / Delete customer by ID
-
-## 🤝 Kontribusi / Contributing
-
-Kami menyambut kontribusi untuk Hotel Restful API! Jika Anda memiliki ide, saran, atau laporan bug, silakan buka issue atau kirim pull request.
-
-We welcome contributions to Hotel Restful API! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
-
-1. Fork repositori / Fork the repository
-2. Buat cabang baru (`git checkout -b feature/your-feature`) / Create a new branch (`git checkout -b feature/your-feature`)
-3. Commit perubahan Anda (`git commit -am 'Add some feature'`) / Commit your changes (`git commit -am 'Add some feature'`)
-4. Push ke cabang (`git push origin feature/your-feature`) / Push to the branch (`git push origin feature/your-feature`)
-5. Buat pull request / Open a pull request
